@@ -61,8 +61,37 @@ public class MainActivity extends AppCompatActivity {
         actualizar.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                /**
+                 * Cuando debas modificar un subconjunto de los valores de la
+                 * base de datos, usa el método update().
+                 *
+                 *  En la actualización de la tabla se combinan la sintaxis del
+                 *  valor de contenido de insert() y la sintaxis where de
+                 *  delete().
+                 */
+                SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
+                // New value for one column
+                ContentValues values = new ContentValues();
+                //Se eligen la o las s columna(s) que se pretenden modificar
+                //y se le suministra la nueva informacion
+                values.put(EstructuraBaseDeDatos.NOMBRE_COLUMNA_DOS, texto_nombre.getText().toString());
+                values.put(EstructuraBaseDeDatos.NOMBRE_COLUMNA_TRES, texto_apellido.getText().toString());
+
+                //dr rlije de donde se leeran los resultados de busqueda de campos a actualizar
+                String selection = EstructuraBaseDeDatos.NOMBRE_COLUMNA_UNO + " LIKE ?";
+                // Se elije el cristerio de busqueda, o clave de actualizacion
+                String[] selectionArgs = { texto_id.getText().toString() };
+
+                int count = db.update(
+                        EstructuraBaseDeDatos.NOMBRE_TABLA,
+                        values,
+                        selection,
+                        selectionArgs);
+                Toast.makeText(getApplicationContext(),"Se actualizo el registro correctamente ",
+                        Toast.LENGTH_LONG).show();
             }
+
         });
 
         buscar.setOnClickListener(new View.OnClickListener(){
@@ -120,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                     * programa se callera, con este try catch hacemis que al
                     * encontrar la falla, el programa este autorizado a seguir
                     * solo informandonos que la consulta no arrojo ningun
-                    * resultado. 
+                    * resultado.
                     * */
                     Toast.makeText(getApplicationContext(),"No se encontro el registroe: ",
                             Toast.LENGTH_LONG).show();
@@ -131,7 +160,35 @@ public class MainActivity extends AppCompatActivity {
         borrar.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-
+                /**
+                 * Para eliminar filas de una tabla, debes proporcionar
+                 * los criterios de selección que identifican las filas.
+                 * La Database API proporciona un mecanismo para crear
+                 * criterios de selección que protegen contra ataques por
+                 * inyección de código SQL. El mecanismo divide la
+                 * especificación de la selección en una cláusula de la
+                 * selección y los argumentos de la selección. La cláusula
+                 * define las columnas a comprobar, y también permite combinar
+                 * pruebas de columnas . Los argumentos son los valores en los
+                 * que se realizan pruebas, y están enlazados en la cláusula
+                 * . Dado que el resultado no se maneja como una instrucción
+                 * SQL normal, es inmune a la inyección de código SQL.
+                 */
+                //hacer que se pueda escribir la base de datos
+                SQLiteDatabase db = mDbHelper.getWritableDatabase();
+                // Definir el criterio de busqueda
+                String selection = EstructuraBaseDeDatos.NOMBRE_COLUMNA_UNO + " LIKE ?";
+                // Specify arguments in placeholder order.
+                String[] selectionArgs = { texto_id.getText().toString() };
+                // Borramos el registro
+                db.delete(EstructuraBaseDeDatos.NOMBRE_TABLA, selection, selectionArgs);
+                //informamos que el registro se borro correctamene
+                Toast.makeText(getApplicationContext(),"Se borro el registro con if:  "
+                                +texto_id.getText().toString(), Toast.LENGTH_LONG).show();
+                //reiniciamos los cuadros de texto
+                texto_id.setText("");
+                texto_nombre.setText("");
+                texto_apellido.setText("");
             }
         });
     }
