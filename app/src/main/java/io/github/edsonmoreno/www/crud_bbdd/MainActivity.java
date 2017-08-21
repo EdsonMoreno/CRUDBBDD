@@ -96,21 +96,35 @@ public class MainActivity extends AppCompatActivity {
                 // Si hayresultados iguales los ordena segun un criterio
                /* String sortOrder =
                         FeedEntry.COLUMN_NAME_SUBTITLE + " DESC";*/
-
-                Cursor c = db.query(
-                        EstructuraBaseDeDatos.NOMBRE_TABLA,       // The table to query
-                        projection,                               // The columns to return
-                        selection,                                // The columns for the WHERE clause
-                        selectionArgs,                            // The values for the WHERE clause
-                        null,                                     // don't group the rows
-                        null,                                     // don't filter by row groups
-                        null                                 // The sort order
-                );
-                //Ubicamos elcursor en el primer registro de la tabla en memoria
-                c.moveToFirst();
-                //obtenemos la informacion de la primera columna de la tabla resultado
-                texto_nombre.setText(c.getString(0));
-                texto_apellido.setText(c.getString(1));
+                try {
+                    Cursor c = db.query(
+                            EstructuraBaseDeDatos.NOMBRE_TABLA,       // The table to query
+                            projection,                               // The columns to return
+                            selection,                                // The columns for the WHERE clause
+                            selectionArgs,                            // The values for the WHERE clause
+                            null,                                     // don't group the rows
+                            null,                                     // don't filter by row groups
+                            null                                 // The sort order
+                    );
+                    //Ubicamos elcursor en el primer registro de la tabla en memoria
+                    c.moveToFirst();
+                    //obtenemos la informacion de la primera columna de la tabla resultado
+                    texto_nombre.setText(c.getString(0));
+                    texto_apellido.setText(c.getString(1));
+                }catch(Exception e ){
+                    /*
+                    * Si al hacer una consulta el id no existe la instruccion
+                    * db.query nos devolvera un registro baio, osea un puntero
+                    * nulo al itentar ubicar el curr al inicio de este puntero
+                    * nulo se genera una  excepcion que  originaria que el
+                    * programa se callera, con este try catch hacemis que al
+                    * encontrar la falla, el programa este autorizado a seguir
+                    * solo informandonos que la consulta no arrojo ningun
+                    * resultado. 
+                    * */
+                    Toast.makeText(getApplicationContext(),"No se encontro el registroe: ",
+                            Toast.LENGTH_LONG).show();
+                }
             }
         });
 
